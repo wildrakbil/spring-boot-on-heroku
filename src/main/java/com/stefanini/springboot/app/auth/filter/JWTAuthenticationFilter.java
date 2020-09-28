@@ -1,8 +1,11 @@
 package com.stefanini.springboot.app.auth.filter;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.stefanini.springboot.app.auth.service.JWTService;
 import com.stefanini.springboot.app.auth.service.JWTServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stefanini.springboot.app.models.entity.Person;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -34,19 +37,28 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
 
+
         String username = obtainUsername(request);
         String password = obtainPassword(request);
-        if (username == null) {
-            username = "";
-        }
-
-        if (password == null) {
-            password = "";
-        }
         if(username != null && password !=null) {
             logger.info("Username desde request parameter (form-data): " + username);
             logger.info("Password desde request parameter (form-data): " + password);
 
+        } else {
+            Person user = null;
+            try {
+                user = new ObjectMapper().readValue(request.getInputStream(), Person.class);
+                username = user.getUsername();
+                password = user.getPassword();
+                logger.info("Username desde request InputStream (raw): " + username);
+                logger.info("Password desde request InputStream (raw): " + password);
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+            } catch (JsonMappingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         username = username.trim();
 
