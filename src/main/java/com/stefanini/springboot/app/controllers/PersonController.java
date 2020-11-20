@@ -1,9 +1,11 @@
 package com.stefanini.springboot.app.controllers;
 
+import com.stefanini.springboot.app.auth.service.JWTService;
 import com.stefanini.springboot.app.models.dao.IPersonDao;
 import com.stefanini.springboot.app.models.entity.IdentificationType;
 import com.stefanini.springboot.app.models.entity.Person;
 import com.stefanini.springboot.app.models.entity.State;
+import com.stefanini.springboot.app.view.dto.IdentificationTypeDTO;
 import com.stefanini.springboot.app.view.dto.PersonDTO;
 import com.stefanini.springboot.app.view.mapper.IMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,15 +13,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = {"http://localhost:4200"})
@@ -32,6 +32,8 @@ public class PersonController {
 
     @Resource(name = "mapper")
     private IMapper mapper;
+
+    private JWTService jwtService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -62,7 +64,7 @@ public class PersonController {
     @Secured("ROLE_USER")
     @PostMapping("/person")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> savePerson(@RequestBody PersonDTO person, BindingResult result) {
+    public ResponseEntity<?> savePerson(@RequestBody PersonDTO person, BindingResult result, Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
         Person personNew = null;
         if (result.hasErrors()) {
@@ -77,6 +79,10 @@ public class PersonController {
         }
         try {
             person.setPassword(passwordEncoder.encode(person.getPassword()));
+            person.setIdentificationTypeCode(new IdentificationTypeDTO());
+            person.getIdentificationTypeCode().setCreateDay(new Date());
+            authentication.getPrincipal();
+            person.getIdentificationTypeCode().setCreateUser(authentication.getName());
             personNew = personDao.save(mapper.mapPerson(person));
         } catch (DataAccessException e) {
             response.put("mensaje", "Error al realizar el insert en la base de datos");
