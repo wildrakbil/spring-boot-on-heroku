@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.stefanini.springboot.app.auth.service.JWTService;
 import com.stefanini.springboot.app.auth.service.JWTServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stefanini.springboot.app.models.entity.Person;
+import com.stefanini.springboot.app.models.entity.User;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -45,9 +44,9 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             logger.info("Password desde request parameter (form-data): " + password);
 
         } else {
-            Person user = null;
+            User user = null;
             try {
-                user = new ObjectMapper().readValue(request.getInputStream(), Person.class);
+                user = new ObjectMapper().readValue(request.getInputStream(), User.class);
                 username = user.getUsername();
                 password = user.getPassword();
                 logger.info("Username desde request InputStream (raw): " + username);
@@ -77,8 +76,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         Map<String, Object> body = new HashMap<>();
         body.put("token", token);
-        body.put("user", (User) authResult.getPrincipal());
-        body.put("mensaje", String.format("Hola %s, has iniciado sesión con éxito!", ((User)authResult.getPrincipal()).getUsername()) );
+        body.put("user", (org.springframework.security.core.userdetails.User) authResult.getPrincipal());
+        body.put("mensaje", String.format("Hola %s, has iniciado sesión con éxito!", ((org.springframework.security.core.userdetails.User)authResult.getPrincipal()).getUsername()) );
 
         response.getWriter().write(new ObjectMapper().writeValueAsString(body));
         response.setStatus(200);

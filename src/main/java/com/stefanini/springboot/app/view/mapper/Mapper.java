@@ -1,22 +1,20 @@
 package com.stefanini.springboot.app.view.mapper;
 
-import com.stefanini.springboot.app.models.entity.IdentificationType;
-import com.stefanini.springboot.app.models.entity.Person;
-import com.stefanini.springboot.app.models.entity.State;
-import com.stefanini.springboot.app.view.dto.IdentificationTypeDTO;
-import com.stefanini.springboot.app.view.dto.PersonDTO;
-import com.stefanini.springboot.app.view.dto.StateDTO;
+import com.stefanini.springboot.app.models.entity.Role;
+import com.stefanini.springboot.app.models.entity.User;
+import com.stefanini.springboot.app.view.dto.RoleDTO;
+import com.stefanini.springboot.app.view.dto.UserDTO;
 import org.springframework.stereotype.Component;
 
 
 @Component(value = "mapper")
 public class Mapper implements IMapper{
     @Override
-    public PersonDTO mapPerson(Person in) {
+    public UserDTO mapPerson(User in) {
         if(in==null){
             return null;
         }
-        PersonDTO out= new PersonDTO();
+        UserDTO out= new UserDTO();
         out.setId(in.getId());
         out.setFirstname(in.getFirstname());
         out.setLastname(in.getLastname());
@@ -24,17 +22,16 @@ public class Mapper implements IMapper{
         out.setUsername(in.getUsername());
         out.setPassword(in.getPassword());
         out.setIdentification(in.getIdentification());
-        out.setIdentificationTypeCode(mapIdentificationType(in.getIdentificationTypeCode()));
-        out.setStateCode(mapState(in.getStateCode()));
+        out.setRole(mapRole(in.getRole()));
         return out;
     }
 
     @Override
-    public Person mapPerson(PersonDTO in) {
+    public User mapPerson(UserDTO in) {
         if(in==null){
             return null;
         }
-        Person out= new Person();
+        User out= new User();
         out.setId(in.getId());
         out.setFirstname(in.getFirstname());
         out.setLastname(in.getLastname());
@@ -42,64 +39,32 @@ public class Mapper implements IMapper{
         out.setUsername(in.getUsername());
         out.setPassword(in.getPassword());
         out.setIdentification(in.getIdentification());
-        out.setIdentificationTypeCode(mapIdentificationType(in.getIdentificationTypeCode()));
-        out.setStateCode(mapState(in.getStateCode()));
+        out.setRole(mapRole(in.getRole()));
         return out;
     }
 
-    private IdentificationTypeDTO mapIdentificationType(IdentificationType in){
+    @Override
+    public RoleDTO mapRole(Role in){
         if(in==null){
             return null;
         }
-        IdentificationTypeDTO out = new IdentificationTypeDTO();
+        RoleDTO out = new RoleDTO();
         out.setId(in.getId());
         out.setName(in.getName());
-        out.setCreateDay(in.getCreateDay());
-        out.setCreateUser(in.getCreateUser());
-        out.setModificationDay(in.getModificationDay());
-        out.setModificationUser(in.getModificationUser());
+        out.setPermits(in.getPermits());
         return out;
     }
 
-    private IdentificationType mapIdentificationType(IdentificationTypeDTO in){
+    @Override
+    public Role mapRole(RoleDTO in){
         if(in==null){
             return null;
         }
-        IdentificationType out = new IdentificationType();
+        Role out = new Role();
         out.setId(in.getId());
         out.setName(in.getName());
-        out.setCreateDay(in.getCreateDay());
-        out.setCreateUser(in.getCreateUser());
-        out.setModificationDay(in.getModificationDay());
-        out.setModificationUser(in.getModificationUser());
+        out.setPermits(in.getPermits());
         return out;
     }
 
-    private State mapState(StateDTO in){
-        if(in==null){
-            return null;
-        }
-        State out = new State();
-        out.setId(in.getId());
-        out.setName(in.getName());
-        out.setCreateDay(in.getCreateDay());
-        out.setCreateUser(in.getCreateUser());
-        out.setModificationDay(in.getModificationDay());
-        out.setModificationUser(in.getModificationUser());
-        return out;
-    }
-
-    private StateDTO mapState(State in){
-        if(in==null){
-            return null;
-        }
-        StateDTO out = new StateDTO();
-        out.setId(in.getId());
-        out.setName(in.getName());
-        out.setCreateDay(in.getCreateDay());
-        out.setCreateUser(in.getCreateUser());
-        out.setModificationDay(in.getModificationDay());
-        out.setModificationUser(in.getModificationUser());
-        return out;
-    }
 }

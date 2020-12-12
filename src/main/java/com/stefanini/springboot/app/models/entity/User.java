@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-public class Person implements Serializable {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,12 +22,9 @@ public class Person implements Serializable {
     private String password;
     @Column(name = "identification")
     private Long identification;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "identification_type_code")
-    private IdentificationType identificationTypeCode;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "state_code")
-    private State stateCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_role")
+    private Role role;
 
     public Long getId() {
         return id;
@@ -85,19 +82,11 @@ public class Person implements Serializable {
         this.identification = identification;
     }
 
-    public IdentificationType getIdentificationTypeCode() {
-        return identificationTypeCode;
+    public Role getRole() {
+        return role;
     }
 
-    public void setIdentificationTypeCode(IdentificationType identificationTypeCode) {
-        this.identificationTypeCode = identificationTypeCode;
-    }
-
-    public State getStateCode() {
-        return stateCode;
-    }
-
-    public void setStateCode(State stateCode) {
-        this.stateCode = stateCode;
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

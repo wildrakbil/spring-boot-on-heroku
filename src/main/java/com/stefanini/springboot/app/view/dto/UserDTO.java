@@ -3,7 +3,7 @@ package com.stefanini.springboot.app.view.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-public class PersonDTO implements Serializable {
+public class UserDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -14,8 +14,7 @@ public class PersonDTO implements Serializable {
     private String username;
     private String password;
     private Long identification;
-    private IdentificationTypeDTO identificationTypeCode;
-    private StateDTO stateCode;
+    private RoleDTO role;
 
     public Long getId() {
         return id;
@@ -73,19 +72,11 @@ public class PersonDTO implements Serializable {
         this.identification = identification;
     }
 
-    public IdentificationTypeDTO getIdentificationTypeCode() {
-        return identificationTypeCode;
+    public RoleDTO getRole() {
+        return role;
     }
 
-    public void setIdentificationTypeCode(IdentificationTypeDTO identificationTypeCode) {
-        this.identificationTypeCode = identificationTypeCode;
-    }
-
-    public StateDTO getStateCode() {
-        return stateCode;
-    }
-
-    public void setStateCode(StateDTO stateCode) {
-        this.stateCode = stateCode;
+    public void setRole(RoleDTO role) {
+        this.role = role;
     }
 }
