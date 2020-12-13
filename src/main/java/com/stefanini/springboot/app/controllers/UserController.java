@@ -81,7 +81,7 @@ public class UserController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
         try {
-            Role role = roleDao.findByname(user.getRole().getName());
+            Role role = roleDao.findByName(user.getRole().getName());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setRole(mapper.mapRole(role));
             userNew = userDao.save(mapper.mapUser(user));
@@ -121,7 +121,7 @@ public class UserController {
             in.setId(userActual.getId());
             userActual = mapper.mapUser(in);
             if (in.getRole() != null) {
-                Role role = roleDao.findByname(in.getRole().getName());
+                Role role = roleDao.findByName(in.getRole().getName());
                 userActual.setRole(role);
             }
             userUpdated = userDao.save(userActual);
