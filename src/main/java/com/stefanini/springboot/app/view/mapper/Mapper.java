@@ -1,11 +1,7 @@
 package com.stefanini.springboot.app.view.mapper;
 
-import com.stefanini.springboot.app.models.entity.Role;
-import com.stefanini.springboot.app.models.entity.Schedule;
-import com.stefanini.springboot.app.models.entity.User;
-import com.stefanini.springboot.app.view.dto.RoleDTO;
-import com.stefanini.springboot.app.view.dto.ScheduleDTO;
-import com.stefanini.springboot.app.view.dto.UserDTO;
+import com.stefanini.springboot.app.models.entity.*;
+import com.stefanini.springboot.app.view.dto.*;
 import org.springframework.stereotype.Component;
 
 
@@ -55,9 +51,9 @@ public class Mapper implements IMapper {
             return null;
         }
         RoleDTO out = new RoleDTO();
-        out.setId(in.getId());
+        //out.setId(in.getId());
         out.setName(in.getName());
-        out.setPermits(in.getPermits());
+        //out.setPermits(in.getPermits());
         return out;
     }
 
@@ -96,6 +92,62 @@ public class Mapper implements IMapper {
         out.setDay(in.getDay());
         out.setStartTime(in.getStartTime());
         out.setEndTime(in.getEndTime());
+        return out;
+    }
+
+    @Override
+    public Service mapService(ServiceDTO in) {
+        if (in == null) {
+            return null;
+        }
+        Service out = new Service();
+        out.setId(in.getId());
+        out.setName(in.getName());
+        out.setDescription(in.getDescription());
+        out.setPathImg(in.getPathImg());
+        out.setState(in.getState());
+        return out;
+    }
+
+    @Override
+    public ServiceDTO mapService(Service in) {
+        if (in == null) {
+            return null;
+        }
+        ServiceDTO out = new ServiceDTO();
+        out.setId(in.getId());
+        out.setName(in.getName());
+        out.setDescription(in.getDescription());
+        out.setPathImg(in.getPathImg());
+        out.setState(in.getState());
+        return out;
+    }
+
+    @Override
+    public Booking mapBooking(BookingDTO in) {
+        if (in == null) {
+            return null;
+        }
+        Booking out = new Booking();
+        out.setId(in.getId());
+        out.setUser(mapUser(in.getUser()));
+        out.setService(mapService(in.getService()));
+        out.setDay(in.getDay());
+        out.setStartTime(in.getStartTime());
+        return out;
+    }
+
+    @Override
+    public BookingDTO mapBooking(Booking in) {
+        if (in == null) {
+            return null;
+        }
+        BookingDTO out = new BookingDTO();
+        out.setId(in.getId());
+        out.setUser(mapUser(in.getUser()));
+        out.setService(mapService(in.getService()));
+        out.setDay(in.getDay());
+        out.setStartTime(in.getStartTime());
         return out;
     }
 }

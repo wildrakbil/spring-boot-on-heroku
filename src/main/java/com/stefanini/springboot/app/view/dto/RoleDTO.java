@@ -1,7 +1,6 @@
 package com.stefanini.springboot.app.view.dto;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class RoleDTO implements Serializable {
 

@@ -1,11 +1,7 @@
 package com.stefanini.springboot.app.view.mapper;
 
-import com.stefanini.springboot.app.models.entity.Role;
-import com.stefanini.springboot.app.models.entity.Schedule;
-import com.stefanini.springboot.app.models.entity.User;
-import com.stefanini.springboot.app.view.dto.RoleDTO;
-import com.stefanini.springboot.app.view.dto.ScheduleDTO;
-import com.stefanini.springboot.app.view.dto.UserDTO;
+import com.stefanini.springboot.app.models.entity.*;
+import com.stefanini.springboot.app.view.dto.*;
 
 public interface IMapper {
 
@@ -15,4 +11,8 @@ public interface IMapper {
     Role mapRole(RoleDTO in);
     Schedule mapSchedule(ScheduleDTO in);
     ScheduleDTO mapSchedule(Schedule in);
+    Service mapService(ServiceDTO in);
+    ServiceDTO mapService(Service in);
+    Booking mapBooking(BookingDTO in);
+    BookingDTO mapBooking(Booking in);
 }

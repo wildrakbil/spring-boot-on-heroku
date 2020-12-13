@@ -10,7 +10,7 @@ public class Schedule implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name="day", length=20)
+    @Column(name = "day", unique = true, length = 20)
     private String day;
     @Column(name = "start_time")
     private long startTime;

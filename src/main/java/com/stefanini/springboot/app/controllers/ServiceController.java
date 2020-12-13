@@ -1,75 +1,64 @@
 package com.stefanini.springboot.app.controllers;
 
-import com.stefanini.springboot.app.auth.service.JWTService;
-import com.stefanini.springboot.app.models.dao.IRoleDao;
-import com.stefanini.springboot.app.models.dao.IUserDao;
-import com.stefanini.springboot.app.models.entity.Role;
-import com.stefanini.springboot.app.models.entity.User;
-import com.stefanini.springboot.app.view.dto.UserDTO;
+import com.stefanini.springboot.app.models.dao.IServiceDao;
+import com.stefanini.springboot.app.models.entity.Service;
+import com.stefanini.springboot.app.view.dto.ServiceDTO;
 import com.stefanini.springboot.app.view.mapper.IMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = {"http://localhost:4200", "https://angular-on-heroku1.herokuapp.com/"})
 @RestController
 @RequestMapping("/api")
-public class UserController {
-
-    @Autowired
-    private IUserDao userDao;
-
-    @Autowired
-    private IRoleDao roleDao;
+public class ServiceController {
 
     @Resource(name = "mapper")
     private IMapper mapper;
 
-    private JWTService jwtService;
-
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private IServiceDao serviceDao;
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
-    @GetMapping("/users")
-    @ResponseStatus(HttpStatus.OK)
-    public List<UserDTO> getAllUsers() {
-        List<User> userList = userDao.findAll();
-        List<UserDTO> out = new ArrayList<>();
-        if (userList != null) {
-            for (User in : userList) {
-                out.add(mapper.mapUser(in));
+    @Secured({"ROLE_ADMIN"})
+    @GetMapping("/services")
+    public List<ServiceDTO> getAllServices() {
+        List<Service> data = serviceDao.findAll();
+        List<ServiceDTO> out = new ArrayList<>();
+        if (data != null) {
+            for (Service in : data) {
+                out.add(mapper.mapService(in));
             }
         }
         return out;
     }
 
     @Secured("ROLE_ADMIN")
-    @GetMapping("/user/{id}")
-    public UserDTO getUser(@PathVariable long id) {
+    @GetMapping("/service/{id}")
+    public ServiceDTO getService(@PathVariable long id) {
         Map<String, Object> response = new HashMap<>();
-        User out = userDao.findById(id);
+        Service out = serviceDao.findById(id);
         if (out == null) {
-            response.put("mensaje", "Usuario con ID:".concat(String.valueOf(id)).concat(" No encontrado"));
+            response.put("mensaje", "Servicio con ID:".concat(String.valueOf(id)).concat(" No encontrado"));
         }
-        return mapper.mapUser(out);
+        return mapper.mapService(out);
     }
 
     @Secured("ROLE_ADMIN")
-    @PostMapping("/user")
-    public ResponseEntity<?> createUser(@RequestBody UserDTO user, BindingResult result, Authentication authentication) {
+    @PostMapping("/service")
+    public ResponseEntity<?> createService(@RequestBody ServiceDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
-        User userNew = null;
+        Service serveceNew = null;
         if (result.hasErrors()) {
             List<String> errors = result.getFieldErrors()
                     .stream()
@@ -80,26 +69,24 @@ public class UserController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
         try {
-            Role role = roleDao.findByName(user.getRole().getName());
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRole(mapper.mapRole(role));
-            userNew = userDao.save(mapper.mapUser(user));
+            serveceNew = serviceDao.save(mapper.mapService(in));
         } catch (DataAccessException e) {
             response.put("mensaje", "Error al realizar el insert en la base de datos");
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        response.put("mensaje", "El usuario ha sido creado con éxito!");
-        response.put("data", userNew);
+        response.put("mensaje", "El servicio ha sido creado con éxito!");
+        response.put("data", serveceNew);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
+
     @Secured("ROLE_ADMIN")
-    @PutMapping("/user/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody UserDTO in, BindingResult result) {
+    @PutMapping("/service/{id}")
+    public ResponseEntity<?> updateService(@PathVariable long id, @RequestBody ServiceDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
-        User userUpdated = null;
+        Service serviceUpdated = null;
         if (result.hasErrors()) {
             List<String> errors = result.getFieldErrors()
                     .stream()
@@ -111,41 +98,36 @@ public class UserController {
         }
 
         try {
-            User userActual = userDao.findById(id);
-            if (userActual == null) {
+            Service serviceActual = serviceDao.findById(id);
+            if (serviceActual == null) {
                 response.put("mensaje", "Error: no se pudo editar, el usuario con ID: "
                         .concat(String.valueOf(id).concat(" no existe en la base de datos!")));
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
             }
-            in.setId(userActual.getId());
-            userActual = mapper.mapUser(in);
-            if (in.getRole() != null) {
-                Role role = roleDao.findByName(in.getRole().getName());
-                userActual.setRole(role);
-            }
-            userUpdated = userDao.save(userActual);
+            in.setId(serviceActual.getId());
+            serviceActual = mapper.mapService(in);
+            serviceUpdated = serviceDao.save(serviceActual);
 
         } catch (DataAccessException e) {
-            response.put("mensaje", "Error al actualizar el usuario en la base de datos");
+            response.put("mensaje", "Error al actualizar el servicio en la base de datos");
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        response.put("mensaje", "El usuario ha sido actualizado con éxito!");
-        response.put("data", userUpdated);
+        response.put("mensaje", "El servicio ha sido actualizado con éxito!");
+        response.put("data", serviceUpdated);
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
     }
 
     @Secured("ROLE_ADMIN")
-    @DeleteMapping("/user/{id}")
-    //@ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<?> deleteUser(@PathVariable long id) {
+    @DeleteMapping("/service/{id}")
+    public ResponseEntity<?> deleteservice(@PathVariable long id) {
         Map<String, Object> response = new HashMap<>();
-        User user = userDao.findById(id);
-        if (user != null) {
-            userDao.delete(user);
+        Service service = serviceDao.findById(id);
+        if (service != null) {
+            serviceDao.delete(service);
         } else {
-            response.put("mensaje", "El usuario no fue encontrado para ser borrado");
+            response.put("mensaje", "La Servicio no fue encontrado para ser borrado");
         }
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
     }

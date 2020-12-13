@@ -27,7 +27,7 @@ public class User implements Serializable {
     private String lastname;
     @Temporal(TemporalType.DATE)
     private Date birthday;
-    @Column(name = "identification")
+    @Column(name = "identification", unique = true)
     private Long identification;
     @Column(name = "phone")
     private Long phone;
