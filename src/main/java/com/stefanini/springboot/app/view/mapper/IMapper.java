@@ -7,8 +7,8 @@ import com.stefanini.springboot.app.view.dto.UserDTO;
 
 public interface IMapper {
 
-    UserDTO mapPerson(User in);
-    User mapPerson(UserDTO in);
+    UserDTO mapUser(User in);
+    User mapUser(UserDTO in);
     RoleDTO mapRole(Role in);
     Role mapRole(RoleDTO in);
 }

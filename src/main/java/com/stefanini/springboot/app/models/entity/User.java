@@ -10,21 +10,29 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_role")
+    private Role role;
+    @Column(name = "user_name", unique = true, length = 20)
+    private String username;
+    @Column(name = "password", length = 60)
+    private String password;
+    @Temporal(TemporalType.DATE)
+    private Date createday;
+    @Temporal(TemporalType.DATE)
+    private Date updateat;
     @Column(name = "first_name", length = 100)
     private String firstname;
     @Column(name = "last_name", length = 100)
     private String lastname;
     @Temporal(TemporalType.DATE)
     private Date birthday;
-    @Column(name = "user_name", unique = true, length = 20)
-    private String username;
-    @Column(name = "password", length = 60)
-    private String password;
     @Column(name = "identification")
     private Long identification;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_role")
-    private Role role;
+    @Column(name = "phone")
+    private Long phone;
+    @Column(name = "address", length = 100)
+    private String address;
 
     public Long getId() {
         return id;
@@ -88,5 +96,37 @@ public class User implements Serializable {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Date getCreateday() {
+        return createday;
+    }
+
+    public void setCreateday(Date createday) {
+        this.createday = createday;
+    }
+
+    public Date getUpdateat() {
+        return updateat;
+    }
+
+    public void setUpdateat(Date updateat) {
+        this.updateat = updateat;
+    }
+
+    public Long getPhone() {
+        return phone;
+    }
+
+    public void setPhone(Long phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

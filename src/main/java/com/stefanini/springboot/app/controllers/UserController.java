@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = {"http://localhost:4200","https://angular-on-heroku1.herokuapp.com/"})
 @RestController
 @RequestMapping("/api")
-public class PersonController {
+public class UserController {
 
     @Autowired
     private IUserDao userDao;
@@ -41,35 +41,34 @@ public class PersonController {
     private PasswordEncoder passwordEncoder;
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
-    @GetMapping("/persons")
+    @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDTO>  getAllPerson() {
+    public List<UserDTO>  getAllUsers() {
         List<User> userList = userDao.findAll();
         List<UserDTO> out = new ArrayList<>();
         if (userList != null) {
             for (User in : userList) {
-                out.add(mapper.mapPerson(in));
+                out.add(mapper.mapUser(in));
             }
         }
         return out;
     }
 
     @Secured("ROLE_ADMIN")
-    @GetMapping("/person/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public UserDTO getPerson(@PathVariable long id) {
+    @GetMapping("/user/{id}")
+    public UserDTO getUser(@PathVariable long id) {
         Map<String, Object> response = new HashMap<>();
         User out = userDao.findById(id);
         if (out == null) {
             response.put("mensaje", "Usuario con ID:".concat(String.valueOf(id)).concat(" No encontrado"));
             //return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NO_CONTENT);
         }
-        return mapper.mapPerson(out);
+        return mapper.mapUser(out);
     }
 
     @Secured("ROLE_ADMIN")
-    @PostMapping("/person")
-    public ResponseEntity<?> createPerson(@RequestBody UserDTO person, BindingResult result, Authentication authentication) {
+    @PostMapping("/user")
+    public ResponseEntity<?> createUser(@RequestBody UserDTO user, BindingResult result, Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
         User userNew = null;
         if (result.hasErrors()) {
@@ -82,10 +81,10 @@ public class PersonController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
         try {
-            Role role = roleDao.findByname(person.getRole().getName());
-            person.setPassword(passwordEncoder.encode(person.getPassword()));
-            person.setRole(mapper.mapRole(role));
-            userNew = userDao.save(mapper.mapPerson(person));
+            Role role = roleDao.findByname(user.getRole().getName());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRole(mapper.mapRole(role));
+            userNew = userDao.save(mapper.mapUser(user));
         } catch (DataAccessException e) {
             response.put("mensaje", "Error al realizar el insert en la base de datos");
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
@@ -98,8 +97,8 @@ public class PersonController {
     }
 
     @Secured("ROLE_ADMIN")
-    @PutMapping("/person/{id}")
-    public ResponseEntity<?> update(@PathVariable long id, @RequestBody UserDTO in, BindingResult result) {
+    @PutMapping("/user/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody UserDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
         User userUpdated = null;
         if (result.hasErrors()) {
@@ -120,7 +119,7 @@ public class PersonController {
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
             }
             in.setId(userActual.getId());
-            userActual = mapper.mapPerson(in);
+            userActual = mapper.mapUser(in);
             if (in.getRole() != null) {
                 Role role = roleDao.findByname(in.getRole().getName());
                 userActual.setRole(role);
@@ -139,9 +138,9 @@ public class PersonController {
     }
 
     @Secured("ROLE_ADMIN")
-    @DeleteMapping("/person/{id}")
+    @DeleteMapping("/user/{id}")
     //@ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<?> delete(@PathVariable long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable long id) {
         Map<String, Object> response = new HashMap<>();
         User user = userDao.findById(id);
         userDao.delete(user);

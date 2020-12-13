@@ -73,12 +73,10 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String token = jwtService.create(authResult);
 
         response.addHeader(JWTServiceImpl.HEADER_STRING, JWTServiceImpl.TOKEN_PREFIX + token);
-
         Map<String, Object> body = new HashMap<>();
         body.put("token", token);
         body.put("user", (org.springframework.security.core.userdetails.User) authResult.getPrincipal());
         body.put("mensaje", String.format("Hola %s, has iniciado sesión con éxito!", ((org.springframework.security.core.userdetails.User)authResult.getPrincipal()).getUsername()) );
-
         response.getWriter().write(new ObjectMapper().writeValueAsString(body));
         response.setStatus(200);
         response.setContentType("application/json");
@@ -91,7 +89,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Map<String, Object> body = new HashMap<String, Object>();
         body.put("mensaje", "Error de autenticación: username o password incorrecto!");
         body.put("error", failed.getMessage());
-
         response.getWriter().write(new ObjectMapper().writeValueAsString(body));
         response.setStatus(401);
         response.setContentType("application/json");

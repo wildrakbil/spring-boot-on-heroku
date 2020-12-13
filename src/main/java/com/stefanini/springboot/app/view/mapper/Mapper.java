@@ -10,24 +10,28 @@ import org.springframework.stereotype.Component;
 @Component(value = "mapper")
 public class Mapper implements IMapper{
     @Override
-    public UserDTO mapPerson(User in) {
+    public UserDTO mapUser(User in) {
         if(in==null){
             return null;
         }
         UserDTO out= new UserDTO();
         out.setId(in.getId());
+        out.setRole(mapRole(in.getRole()));
+        out.setUsername(in.getUsername());
+        out.setPassword(in.getPassword());
+        out.setCreateday(in.getCreateday());
+        out.setUpdateat(in.getUpdateat());
         out.setFirstname(in.getFirstname());
         out.setLastname(in.getLastname());
         out.setBirthday(in.getBirthday());
-        out.setUsername(in.getUsername());
-        out.setPassword(in.getPassword());
         out.setIdentification(in.getIdentification());
-        out.setRole(mapRole(in.getRole()));
+        out.setPhone(in.getPhone());
+        out.setAddress(in.getAddress());
         return out;
     }
 
     @Override
-    public User mapPerson(UserDTO in) {
+    public User mapUser(UserDTO in) {
         if(in==null){
             return null;
         }

@@ -8,13 +8,17 @@ public class UserDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long id;
+    private RoleDTO role;
+    private String username;
+    private String password;
+    private Date createday;
+    private Date updateat;
     private String firstname;
     private String lastname;
     private Date birthday;
-    private String username;
-    private String password;
     private Long identification;
-    private RoleDTO role;
+    private Long phone;
+    private String address;
 
     public Long getId() {
         return id;
@@ -78,5 +82,37 @@ public class UserDTO implements Serializable {
 
     public void setRole(RoleDTO role) {
         this.role = role;
+    }
+
+    public Date getCreateday() {
+        return createday;
+    }
+
+    public void setCreateday(Date createday) {
+        this.createday = createday;
+    }
+
+    public Date getUpdateat() {
+        return updateat;
+    }
+
+    public void setUpdateat(Date updateat) {
+        this.updateat = updateat;
+    }
+
+    public Long getPhone() {
+        return phone;
+    }
+
+    public void setPhone(Long phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
