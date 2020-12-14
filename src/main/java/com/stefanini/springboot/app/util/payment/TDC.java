@@ -1,6 +1,6 @@
-package com.stefanini.springboot.app.util;
+package com.stefanini.springboot.app.util.payment;
 
-public class TDC extends PaynetMethod {
+public class TDC extends PaymentMethod {
 
     @Override
     public String payBill(long amount) {

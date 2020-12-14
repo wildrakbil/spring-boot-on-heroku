@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component(value = "utils")
-public class Utils implements IUtils{
+public class Utils implements IUtils {
 
     @Override
     public boolean validBindingResult(BindingResult result, Map<String, Object> response) {
@@ -23,4 +23,5 @@ public class Utils implements IUtils{
         }
         return false;
     }
+
 }

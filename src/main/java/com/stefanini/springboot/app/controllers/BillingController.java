@@ -3,6 +3,10 @@ package com.stefanini.springboot.app.controllers;
 import com.stefanini.springboot.app.models.dao.IBillingDao;
 import com.stefanini.springboot.app.models.entity.Billing;
 import com.stefanini.springboot.app.util.*;
+import com.stefanini.springboot.app.util.payment.EFE;
+import com.stefanini.springboot.app.util.payment.PSE;
+import com.stefanini.springboot.app.util.payment.PaymentMethod;
+import com.stefanini.springboot.app.util.payment.TDC;
 import com.stefanini.springboot.app.view.dto.BillingDTO;
 import com.stefanini.springboot.app.view.mapper.IMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +52,7 @@ public class BillingController {
         return out;
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/billing/{id}")
     public BillingDTO getBilling(@PathVariable long id) {
         Map<String, Object> response = new HashMap<>();
@@ -127,7 +131,7 @@ public class BillingController {
     }
 
 
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PutMapping("/pay")
     public ResponseEntity<?> payBill(@RequestBody BillingDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
@@ -141,15 +145,15 @@ public class BillingController {
                         .concat(String.valueOf(in.getId()).concat(" no existe en la base de datos!")));
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
             }
-            PaynetMethod paynetMethod = createPayment(billingActual.getPayment().getType(), response);
-            if (paynetMethod == null) {
+            PaymentMethod paymentMethod = createPayment(billingActual.getPayment().getType(), response);
+            if (paymentMethod == null) {
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
             }
             String mensaje = "";
             if (billingActual.getState()) {
                 mensaje = "Esta factura ya fue pagada";
             } else {
-                mensaje = paynetMethod.payBill(billingActual.getAmount());
+                mensaje = paymentMethod.payBill(billingActual.getAmount());
             }
             response.put("mensaje", mensaje);
             billingActual.setState(true); //factura pagada
@@ -162,8 +166,8 @@ public class BillingController {
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
     }
 
-    private PaynetMethod createPayment(String type, Map<String, Object> response) {
-        PaynetMethod out = null;
+    private PaymentMethod createPayment(String type, Map<String, Object> response) {
+        PaymentMethod out = null;
         switch (type) {
             case "TDC":
                 out = new TDC();

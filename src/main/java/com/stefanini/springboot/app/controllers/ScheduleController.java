@@ -34,7 +34,7 @@ public class ScheduleController {
     private IScheduleDao scheduleDao;
 
 
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/schedules")
     @ResponseStatus(HttpStatus.OK)
     public List<ScheduleDTO> getAllSchedules() {

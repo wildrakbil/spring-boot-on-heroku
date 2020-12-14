@@ -7,4 +7,5 @@ import java.util.Map;
 public interface IUtils {
 
     boolean validBindingResult(BindingResult result, Map<String, Object> response);
+
 }

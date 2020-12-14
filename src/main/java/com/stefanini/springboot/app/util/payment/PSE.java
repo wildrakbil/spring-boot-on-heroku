@@ -1,6 +1,6 @@
-package com.stefanini.springboot.app.util;
+package com.stefanini.springboot.app.util.payment;
 
-public class PSE extends PaynetMethod {
+public class PSE extends PaymentMethod {
 
     @Override
     public String payBill(long amount) {

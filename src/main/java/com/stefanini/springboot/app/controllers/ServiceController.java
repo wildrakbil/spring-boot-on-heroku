@@ -33,7 +33,7 @@ public class ServiceController {
     @Autowired
     private IServiceDao serviceDao;
 
-    @Secured({"ROLE_ADMIN"})
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/services")
     public List<ServiceDTO> getAllServices() {
         List<Service> data = serviceDao.findAll();
@@ -46,7 +46,7 @@ public class ServiceController {
         return out;
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/service/{id}")
     public ServiceDTO getService(@PathVariable long id) {
         Map<String, Object> response = new HashMap<>();

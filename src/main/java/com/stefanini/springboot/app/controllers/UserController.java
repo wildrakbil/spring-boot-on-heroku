@@ -46,7 +46,8 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
     public List<UserDTO> getAllUsers() {
@@ -60,7 +61,7 @@ public class UserController {
         return out;
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/user/{id}")
     public UserDTO getUser(@PathVariable long id) {
         Map<String, Object> response = new HashMap<>();
@@ -71,7 +72,7 @@ public class UserController {
         return mapper.mapUser(out);
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PostMapping("/user")
     public ResponseEntity<?> createUser(@RequestBody UserDTO user, BindingResult result, Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
@@ -95,7 +96,7 @@ public class UserController {
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PutMapping("/user/{id}")
     public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody UserDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();

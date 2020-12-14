@@ -30,7 +30,7 @@ public class PaymentController {
     @Autowired
     private IPaymentDao paymentDao;
 
-    @Secured({"ROLE_ADMIN"})
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/payments")
     public List<PaymentDTO> getAllPayments() {
         List<Payment> data = paymentDao.findAll();

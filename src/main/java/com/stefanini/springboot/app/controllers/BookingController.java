@@ -47,7 +47,7 @@ public class BookingController {
         return out;
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/booking/{id}")
     public BookingDTO getBooking(@PathVariable long id) {
         Map<String, Object> response = new HashMap<>();
@@ -58,7 +58,7 @@ public class BookingController {
         return mapper.mapBooking(out);
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PostMapping("/booking")
     public ResponseEntity<?> createBooking(@RequestBody BookingDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
@@ -85,7 +85,7 @@ public class BookingController {
     }
 
 
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PutMapping("/booking/{id}")
     public ResponseEntity<?> updateBooking(@PathVariable long id, @RequestBody BookingDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
@@ -114,7 +114,7 @@ public class BookingController {
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @DeleteMapping("/booking/{id}")
     public ResponseEntity<?> deleteBooking(@PathVariable long id) {
         Map<String, Object> response = new HashMap<>();
