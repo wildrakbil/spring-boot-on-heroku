@@ -40,7 +40,9 @@ public class BillingController {
         List<BillingDTO> out = new ArrayList<>();
         if (data != null) {
             for (Billing in : data) {
-                out.add(mapper.mapBilling(in));
+                if (!in.getState()) {
+                    out.add(mapper.mapBilling(in));
+                }
             }
         }
         return out;
@@ -96,8 +98,8 @@ public class BillingController {
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
             }
             in.setId(billingActual.getId());
-            in.setState(false); // factura pendiente de pago
             billingActual = mapper.mapBilling(in);
+            billingActual.setState(false); // factura pendiente de pago
             billingUpdated = billingDao.save(billingActual);
 
         } catch (DataAccessException e) {
