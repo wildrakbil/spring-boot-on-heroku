@@ -150,4 +150,62 @@ public class Mapper implements IMapper {
         out.setStartTime(in.getStartTime());
         return out;
     }
+
+    @Override
+    public Billing mapBilling(BillingDTO in) {
+        if (in == null) {
+            return null;
+        }
+        Billing out = new Billing();
+        out.setId(in.getId());
+        out.setBooking(mapBooking(in.getBooking()));
+        out.setPayment(mapPayment(in.getPayment()));
+        out.setDescription(in.getDescription());
+        out.setDate(in.getDate());
+        out.setStartTime(in.getStartTime());
+        out.setAmount(in.getAmount());
+        //out.setState(in.getState());
+        return out;
+    }
+
+    @Override
+    public BillingDTO mapBilling(Billing in) {
+        if (in == null) {
+            return null;
+        }
+        BillingDTO out = new BillingDTO();
+        out.setId(in.getId());
+        out.setBooking(mapBooking(in.getBooking()));
+        out.setPayment(mapPayment(in.getPayment()));
+        out.setDescription(in.getDescription());
+        out.setDate(in.getDate());
+        out.setStartTime(in.getStartTime());
+        out.setAmount(in.getAmount());
+        out.setState(in.getState());
+        return out;
+    }
+
+    @Override
+    public Payment mapPayment(PaymentDTO in) {
+        if (in == null) {
+            return null;
+        }
+        Payment out = new Payment();
+        out.setId(in.getId());
+        out.setType(in.getType());
+        out.setDescription(in.getDescription());
+        return out;
+    }
+
+    @Override
+    public PaymentDTO mapPayment(Payment in) {
+        if (in == null) {
+            return null;
+        }
+        PaymentDTO out = new PaymentDTO();
+        out.setId(in.getId());
+        out.setType(in.getType());
+        out.setDescription(in.getDescription());
+        return out;
+    }
 }

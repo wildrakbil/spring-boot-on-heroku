@@ -5,6 +5,7 @@ import com.stefanini.springboot.app.models.dao.IRoleDao;
 import com.stefanini.springboot.app.models.dao.IUserDao;
 import com.stefanini.springboot.app.models.entity.Role;
 import com.stefanini.springboot.app.models.entity.User;
+import com.stefanini.springboot.app.util.IUtils;
 import com.stefanini.springboot.app.view.dto.UserDTO;
 import com.stefanini.springboot.app.view.mapper.IMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,24 +19,29 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = {"http://localhost:4200", "https://angular-on-heroku1.herokuapp.com/"})
 @RestController
 @RequestMapping("/api")
 public class UserController {
 
+    @Resource(name = "mapper")
+    private IMapper mapper;
+
+    @Autowired
+    private IUtils utils;
+
+    private JWTService jwtService;
+
     @Autowired
     private IUserDao userDao;
 
     @Autowired
     private IRoleDao roleDao;
-
-    @Resource(name = "mapper")
-    private IMapper mapper;
-
-    private JWTService jwtService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -70,13 +76,7 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody UserDTO user, BindingResult result, Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
         User userNew = null;
-        if (result.hasErrors()) {
-            List<String> errors = result.getFieldErrors()
-                    .stream()
-                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
-                    .collect(Collectors.toList());
-
-            response.put("errors", errors);
+        if (utils.validBindingResult(result, response)) {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
         try {
@@ -100,16 +100,9 @@ public class UserController {
     public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody UserDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
         User userUpdated = null;
-        if (result.hasErrors()) {
-            List<String> errors = result.getFieldErrors()
-                    .stream()
-                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
-                    .collect(Collectors.toList());
-
-            response.put("errors", errors);
+        if (utils.validBindingResult(result, response)) {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
-
         try {
             User userActual = userDao.findById(id);
             if (userActual == null) {
@@ -138,14 +131,13 @@ public class UserController {
 
     @Secured("ROLE_ADMIN")
     @DeleteMapping("/user/{id}")
-    //@ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> deleteUser(@PathVariable long id) {
         Map<String, Object> response = new HashMap<>();
         User user = userDao.findById(id);
         if (user != null) {
             userDao.delete(user);
         } else {
-            response.put("mensaje", "El usuario no fue encontrado para ser borrado");
+            response.put("mensaje", "El usuario no fue encontrados para ser borrado");
         }
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
     }

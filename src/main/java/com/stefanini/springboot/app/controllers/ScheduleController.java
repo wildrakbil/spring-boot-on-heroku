@@ -1,11 +1,9 @@
 package com.stefanini.springboot.app.controllers;
 
 import com.stefanini.springboot.app.models.dao.IScheduleDao;
-import com.stefanini.springboot.app.models.entity.Role;
 import com.stefanini.springboot.app.models.entity.Schedule;
-import com.stefanini.springboot.app.models.entity.User;
+import com.stefanini.springboot.app.util.IUtils;
 import com.stefanini.springboot.app.view.dto.ScheduleDTO;
-import com.stefanini.springboot.app.view.dto.UserDTO;
 import com.stefanini.springboot.app.view.mapper.IMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -20,9 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-@CrossOrigin(origins = {"http://localhost:4200","https://angular-on-heroku1.herokuapp.com/"})
+@CrossOrigin(origins = {"http://localhost:4200", "https://angular-on-heroku1.herokuapp.com/"})
 @RestController
 @RequestMapping("/api")
 public class ScheduleController {
@@ -31,13 +28,16 @@ public class ScheduleController {
     private IMapper mapper;
 
     @Autowired
+    private IUtils utils;
+
+    @Autowired
     private IScheduleDao scheduleDao;
 
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/schedules")
     @ResponseStatus(HttpStatus.OK)
-    public List<ScheduleDTO>  getAllSchedules() {
+    public List<ScheduleDTO> getAllSchedules() {
         List<Schedule> scheduleList = scheduleDao.findAll();
         List<ScheduleDTO> out = new ArrayList<>();
         if (scheduleList != null) {
@@ -53,16 +53,9 @@ public class ScheduleController {
     public ResponseEntity<?> updateSchedule(@PathVariable long id, @RequestBody ScheduleDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
         Schedule scheduleUpdated = null;
-        if (result.hasErrors()) {
-            List<String> errors = result.getFieldErrors()
-                    .stream()
-                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
-                    .collect(Collectors.toList());
-
-            response.put("errors", errors);
+        if (utils.validBindingResult(result, response)) {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
-
         try {
             Schedule schedule = scheduleDao.findById(id);
             if (schedule == null) {

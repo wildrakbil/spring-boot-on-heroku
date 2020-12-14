@@ -3,6 +3,7 @@ package com.stefanini.springboot.app.controllers;
 import com.stefanini.springboot.app.models.dao.IBookingDao;
 import com.stefanini.springboot.app.models.entity.Booking;
 import com.stefanini.springboot.app.models.entity.Role;
+import com.stefanini.springboot.app.util.IUtils;
 import com.stefanini.springboot.app.view.dto.BookingDTO;
 import com.stefanini.springboot.app.view.mapper.IMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = {"http://localhost:4200", "https://angular-on-heroku1.herokuapp.com/"})
 @RestController
@@ -25,6 +25,9 @@ public class BookingController {
 
     @Resource(name = "mapper")
     private IMapper mapper;
+
+    @Autowired
+    private IUtils utils;
 
     @Autowired
     private IBookingDao bookingDao;
@@ -60,14 +63,12 @@ public class BookingController {
     public ResponseEntity<?> createBooking(@RequestBody BookingDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
         Booking bookingNew = null;
-        validBindingResult(result, response);
-        if (validBindingResult(result, response)) {
+        if (utils.validBindingResult(result, response)) {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
         try {
             Tomorrow(in);
             if (validSchedule(in)) {
-
                 response.put("mensaje", String.format("El horario %d del %s no esta disponible", in.getStartTime(), dateFormat.format(in.getDay())));
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
             } else {
@@ -78,7 +79,6 @@ public class BookingController {
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
         response.put("mensaje", "La reserva ha sido creado con éxito!");
         response.put("data", bookingNew);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
@@ -90,7 +90,7 @@ public class BookingController {
     public ResponseEntity<?> updateBooking(@PathVariable long id, @RequestBody BookingDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
         Booking bookingUpdated = null;
-        if (validBindingResult(result, response)) {
+        if (utils.validBindingResult(result, response)) {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
         try {
@@ -127,22 +127,9 @@ public class BookingController {
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
     }
 
-    private boolean validBindingResult(BindingResult result, Map<String, Object> response) {
-        if (result.hasErrors()) {
-            List<String> errors = result.getFieldErrors()
-                    .stream()
-                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
-                    .collect(Collectors.toList());
-
-            response.put("errors", errors);
-            return true;
-        }
-        return false;
-    }
-
     private boolean validSchedule(BookingDTO in) {
         String date = dateFormat.format(in.getDay());
-        Booking booking = bookingDao.findByDayAndStartTime(date, in.getStartTime());
+        Booking booking = bookingDao.findByDayAndStartTime(date, in.getStartTime(), in.getService().getId());
         if (booking != null) {
             return true;
         }

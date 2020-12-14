@@ -2,6 +2,7 @@ package com.stefanini.springboot.app.controllers;
 
 import com.stefanini.springboot.app.models.dao.IServiceDao;
 import com.stefanini.springboot.app.models.entity.Service;
+import com.stefanini.springboot.app.util.IUtils;
 import com.stefanini.springboot.app.view.dto.ServiceDTO;
 import com.stefanini.springboot.app.view.mapper.IMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = {"http://localhost:4200", "https://angular-on-heroku1.herokuapp.com/"})
 @RestController
@@ -26,6 +26,9 @@ public class ServiceController {
 
     @Resource(name = "mapper")
     private IMapper mapper;
+
+    @Autowired
+    private IUtils utils;
 
     @Autowired
     private IServiceDao serviceDao;
@@ -59,13 +62,7 @@ public class ServiceController {
     public ResponseEntity<?> createService(@RequestBody ServiceDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
         Service serveceNew = null;
-        if (result.hasErrors()) {
-            List<String> errors = result.getFieldErrors()
-                    .stream()
-                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
-                    .collect(Collectors.toList());
-
-            response.put("errors", errors);
+        if (utils.validBindingResult(result, response)) {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
         try {
@@ -87,16 +84,9 @@ public class ServiceController {
     public ResponseEntity<?> updateService(@PathVariable long id, @RequestBody ServiceDTO in, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
         Service serviceUpdated = null;
-        if (result.hasErrors()) {
-            List<String> errors = result.getFieldErrors()
-                    .stream()
-                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
-                    .collect(Collectors.toList());
-
-            response.put("errors", errors);
+        if (utils.validBindingResult(result, response)) {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
-
         try {
             Service serviceActual = serviceDao.findById(id);
             if (serviceActual == null) {

@@ -15,4 +15,8 @@ public interface IMapper {
     ServiceDTO mapService(Service in);
     Booking mapBooking(BookingDTO in);
     BookingDTO mapBooking(Booking in);
+    Billing mapBilling(BillingDTO in);
+    BillingDTO mapBilling(Billing in);
+    Payment mapPayment(PaymentDTO in);
+    PaymentDTO mapPayment(Payment in);
 }
