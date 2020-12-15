@@ -33,7 +33,6 @@ public class ServiceController {
     @Autowired
     private IServiceDao serviceDao;
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/services")
     public List<ServiceDTO> getAllServices() {
         List<Service> data = serviceDao.findAll();
